@@ -9,6 +9,7 @@ import { Config } from "@prisma/client";
 import * as argon from "argon2";
 import { EventEmitter } from "events";
 import * as fs from "fs";
+import { ClamScanService } from "src/clamscan/clamscan.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { stringToTimespan } from "src/utils/date.util";
 import { parse as yamlParse } from "yaml";
@@ -27,6 +28,7 @@ export class ConfigService extends EventEmitter {
   constructor(
     @Inject("CONFIG_VARIABLES") private configVariables: Config[],
     private prisma: PrismaService,
+    private clamScanService: ClamScanService,
   ) {
     super();
   }
@@ -127,13 +129,29 @@ export class ConfigService extends EventEmitter {
   async list() {
     const configVariables = this.configVariables.filter((c) => !c.secret);
 
-    return configVariables.map((variable) => {
+    const variables = configVariables.map((variable) => {
       return {
         ...variable,
         key: `${variable.category}.${variable.name}`,
         value: variable.value ?? variable.defaultValue,
       };
     });
+
+    variables.push({
+      name: "isConfigured",
+      category: "clamav",
+      type: "boolean",
+      defaultValue: "false",
+      value: (await this.clamScanService.isActive()).toString(),
+      updatedAt: new Date(),
+      obscured: false,
+      secret: false,
+      locked: true,
+      order: 0,
+      key: "clamav.isConfigured",
+    } as any);
+
+    return variables;
   }
 
   async updateMany(data: { key: string; value: string | number | boolean }[]) {

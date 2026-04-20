@@ -33,6 +33,10 @@ export class ClamScanService {
       return null;
     });
 
+  async isActive(): Promise<boolean> {
+    return (await this.ClamScan) !== null;
+  }
+
   async check(shareId: string) {
     const clamScan = await this.ClamScan;
 

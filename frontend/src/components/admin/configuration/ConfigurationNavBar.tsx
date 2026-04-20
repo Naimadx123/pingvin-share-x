@@ -20,14 +20,17 @@ import {
   TbServerBolt,
   TbSettings,
   TbShare,
+  TbShieldCheck,
   TbSocial,
 } from "react-icons/tb";
 import { FormattedMessage } from "react-intl";
+import useConfig from "../../../hooks/config.hook";
 
 export const categories = [
   { name: "General", icon: <TbSettings /> },
   { name: "Email", icon: <TbMail /> },
   { name: "Share", icon: <TbShare /> },
+  { name: "ClamAV", icon: <TbShieldCheck /> },
   { name: "SMTP", icon: <TbAt /> },
   { name: "OAuth", icon: <TbSocial /> },
   { name: "LDAP", icon: <TbBinaryTree /> },
@@ -60,6 +63,15 @@ const ConfigurationNavBar = ({
   setIsMobileNavBarOpened: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { classes } = useStyles();
+  const config = useConfig();
+
+  const filteredCategories = categories.filter((category) => {
+    if (category.name === "ClamAV") {
+      return config.get("clamav.isConfigured") === "true";
+    }
+    return true;
+  });
+
   return (
     <Navbar
       p="md"
@@ -72,7 +84,7 @@ const ConfigurationNavBar = ({
           <FormattedMessage id="admin.config.title" />
         </Text>
         <Stack spacing="xs">
-          {categories.map((category) => (
+          {filteredCategories.map((category) => (
             <Box
               p="xs"
               component={Link}

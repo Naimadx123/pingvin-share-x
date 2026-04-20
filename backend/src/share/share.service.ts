@@ -133,6 +133,7 @@ export class ShareService {
         files: true,
         recipients: true,
         creator: true,
+        security: true,
         reverseShare: { include: { creator: true } },
       },
     });
@@ -175,7 +176,19 @@ export class ShareService {
     }
 
     // Check if any file is malicious with ClamAV
-    void this.clamScanService.checkAndRemove(share.id);
+    const noScanIfAdmin = this.config.get("clamav.noScanIfAdmin");
+    const noScanIfPassword = this.config.get("clamav.noScanIfPassword");
+
+    const isCreatorAdmin =
+      share.creator?.isAdmin || share.reverseShare?.creator?.isAdmin;
+    const hasPassword = !!share.security?.password;
+
+    if (
+      (await this.clamScanService.isActive()) &&
+      !((noScanIfAdmin && isCreatorAdmin) || (noScanIfPassword && hasPassword))
+    ) {
+      void this.clamScanService.checkAndRemove(share.id);
+    }
 
     if (share.reverseShare) {
       await this.prisma.reverseShare.update({

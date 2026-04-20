@@ -415,6 +415,18 @@ export const configVariables = {
       secret: false,
     },
   },
+  clamav: {
+    noScanIfAdmin: {
+      type: "boolean",
+      defaultValue: "false",
+      secret: false,
+    },
+    noScanIfPassword: {
+      type: "boolean",
+      defaultValue: "false",
+      secret: false,
+    },
+  },
 } satisfies ConfigVariables;
 
 export type YamlConfig = {

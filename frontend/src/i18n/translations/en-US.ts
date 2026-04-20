@@ -431,6 +431,7 @@ export default {
   "admin.config.title": "Configuration",
   "admin.config.category.general": "General",
   "admin.config.category.share": "Share",
+  "admin.config.category.clamav": "ClamAV",
   "admin.config.category.cache": "Cache",
   "admin.config.category.email": "Email",
   "admin.config.category.smtp": "SMTP",
@@ -713,6 +714,11 @@ export default {
   "admin.config.legal.privacy-policy-url": "Privacy policy URL",
   "admin.config.legal.privacy-policy-url.description":
     "If you already have a privacy policy page you can link it here instead of using the text field.",
+
+  "admin.config.clamav.no-scan-if-admin": "Cancel scanning if share's creator is an admin",
+  "admin.config.clamav.no-scan-if-admin.description": "Disables ClamAV scanning for shares created by an admin.",
+  "admin.config.clamav.no-scan-if-password": "Cancel scanning if share has a password",
+  "admin.config.clamav.no-scan-if-password.description": "Disables ClamAV scanning for password-protected shares.",
 
   // 404
   "404.description": "Oops this page doesn't exist.",

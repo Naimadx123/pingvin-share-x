@@ -1,5 +1,7 @@
 import { Global, Module } from "@nestjs/common";
 import { Config } from "@prisma/client";
+import { ClamScanModule } from "src/clamscan/clamscan.module";
+import { ClamScanService } from "src/clamscan/clamscan.service";
 import { EmailModule } from "src/email/email.module";
 import { PrismaService } from "src/prisma/prisma.service";
 import { ConfigController } from "./config.controller";
@@ -8,7 +10,7 @@ import { LogoService } from "./logo.service";
 
 @Global()
 @Module({
-  imports: [EmailModule],
+  imports: [EmailModule, ClamScanModule],
   providers: [
     {
       provide: "CONFIG_VARIABLES",
@@ -19,12 +21,20 @@ import { LogoService } from "./logo.service";
     },
     {
       provide: ConfigService,
-      useFactory: async (prisma: PrismaService, configVariables: Config[]) => {
-        const configService = new ConfigService(configVariables, prisma);
+      useFactory: async (
+        prisma: PrismaService,
+        configVariables: Config[],
+        clamScanService: ClamScanService,
+      ) => {
+        const configService = new ConfigService(
+          configVariables,
+          prisma,
+          clamScanService,
+        );
         await configService.initialize();
         return configService;
       },
-      inject: [PrismaService, "CONFIG_VARIABLES"],
+      inject: [PrismaService, "CONFIG_VARIABLES", ClamScanService],
     },
     LogoService,
   ],
